@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exámenes IO – Modo 20 minutos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #facc15;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.3rem;
+      margin-top: 1.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.3rem;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #e5e7eb;
+    }
+
+    .card-sub {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-bottom: 1rem;
+    }
+
+    a.btn {
+      text-decoration: none;
+      background: #facc15;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      color: #1f2937;
+      font-weight: 600;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      transition: 0.2s;
+    }
+
+    a.btn:hover {
+      filter: brightness(0.92);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <div class="title">Modo Examen – 20 Minutos</div>
+      <p class="subtitle">Selecciona el examen del tema que deseas rendir. Tienes exactamente 20 minutos por cada uno.</p>
+    </header>
+
+    <main class="grid">
+
+      <section class="card">
+        <div class="card-title">Tema 1 – Introducción a IO</div>
+        <div class="card-sub">Definiciones, historia, modelos, aplicaciones.</div>
+        <a href="io_quiz_timer.html" class="btn">⏱ Iniciar examen IO</a>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Tema 2 – Método Gráfico</div>
+        <div class="card-sub">Región factible, vértices, FO en 2D.</div>
+        <a href="grafico_quiz_timer.html" class="btn">⏱ Iniciar examen Método Gráfico</a>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Tema 3 – Método Simplex</div>
+        <div class="card-sub">Tablas, Ci − Zj, Big M, restricciones.</div>
+        <a href="simplex_quiz_timer.html" class="btn">⏱ Iniciar examen Simplex</a>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Método Simplex – Examen 20 min</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.8rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.1rem;
+      font-size: 1.7rem;
+      color: #facc15;
+    }
+
+    .subtitle {
+      margin-bottom: 1rem;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .timer {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15,23,42,0.9);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #e5e7eb;
+    }
+
+    .timer span.time {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .question {
+      margin-bottom: 1.2rem;
+      padding: 1rem 1.1rem;
+      border-radius: 0.75rem;
+      background: #020617;
+      border: 1px solid #111827;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .question-number {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      background: #020617;
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid #1f2937;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.35rem;
+      margin-top: 0.3rem;
+    }
+
+    label.option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+    }
+
+    label.option:hover {
+      background: #020617;
+      border-color: #1f2937;
+      transform: translateY(-1px);
+    }
+
+    label.option input {
+      margin-top: 0.1rem;
+      accent-color: #facc15;
+    }
+
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.55rem 1.3rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      background: #facc15;
+      color: #1f2937;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .result strong {
+      color: #fbbf24;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      background: rgba(148,163,184,0.12);
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .correction {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .correction.correct {
+      color: #22c55e;
+    }
+
+    .correction.incorrect {
+      color: #f97316;
+    }
+
+    .question.correct {
+      border-color: #16a34a;
+    }
+
+    .question.incorrect {
+      border-color: #ea580c;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1.3rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Quiz – Método Simplex</h1>
+      <div class="subtitle">
+        Tienes <strong>20 minutos</strong> para responder.  
+        Al presionar <strong>Enviar</strong> (o cuando el tiempo termine), se mostrarán tus respuestas correctas e incorrectas.
+      </div>
+
+      <div class="top-bar">
+        <div class="timer" id="timer-box">
+          ⏱ Tiempo restante: <span class="time" id="timer">20:00</span>
+        </div>
+        <div class="badge" id="status-badge">
+          Examen en curso – Tema: Simplex
+        </div>
+      </div>
+
+      <div id="questions-container"></div>
+
+      <div class="controls">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn-primary" id="submit-btn">✅ Enviar respuestas</button>
+          <button class="btn-secondary" id="reset-btn">🔁 Reiniciar examen</button>
+        </div>
+        <div id="score" class="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CONFIGURACIÓN DEL EXAMEN ======
+    const EXAM_DURATION_SECONDS = 20 * 60; // 20 minutos
+    let timeLeft = EXAM_DURATION_SECONDS;
+    let timerId = null;
+    let examFinished = false;
+
+    // ====== PREGUNTAS (TEMA SIMPLEX) ======
+    const questions = [
+      {
+        text: "El Método Simplex se usa cuando:",
+        options: [
+          "Hay solo dos variables",
+          "El método gráfico es insuficiente",
+          "No existen restricciones",
+          "Las variables no son lineales"
+        ],
+        correct: 1
+      },
+      {
+        text: "El Método Simplex fue propuesto en 1947 por:",
+        options: [
+          "Michael Porter",
+          "Leonid Kantorovich",
+          "George Dantzig",
+          "Richard Bellman"
+        ],
+        correct: 2
+      },
+      {
+        text: "El Simplex es un método:",
+        options: [
+          "Geométrico",
+          "Analítico y algebraico",
+          "Experimental",
+          "Combinatorio"
+        ],
+        correct: 1
+      },
+      {
+        text: "El método Simplex permite resolver:",
+        options: [
+          "Problemas no lineales",
+          "Modelos con muchas variables",
+          "Problemas sin restricciones",
+          "Problemas con exponentes"
+        ],
+        correct: 1
+      },
+      {
+        text: "Las variables del modelo representan:",
+        options: [
+          "Valores fijos",
+          "Incógnitas del problema",
+          "Parámetros arbitrarios",
+          "Recursos ilimitados"
+        ],
+        correct: 1
+      },
+      {
+        text: "Las restricciones reflejan:",
+        options: [
+          "La función objetivo",
+          "Límites y recursos del sistema",
+          "Problemas sin solución",
+          "Las iteraciones del método"
+        ],
+        correct: 1
+      },
+      {
+        text: "La función objetivo puede buscar:",
+        options: [
+          "Maximizar o minimizar",
+          "Solamente maximizar",
+          "Solo minimizar",
+          "Ninguna de las anteriores"
+        ],
+        correct: 0
+      },
+      {
+        text: "El Simplex es un procedimiento:",
+        options: [
+          "Estático",
+          "Iterativo",
+          "Aleatorio",
+          "Experimental"
+        ],
+        correct: 1
+      },
+      {
+        text: "¿Qué representa la variable básica entrante?",
+        options: [
+          "La que sale de la tabla",
+          "La que mejora la función objetivo",
+          "La que se elimina",
+          "La que no tiene impacto"
+        ],
+        correct: 1
+      },
+      {
+        text: "Una variable básica deja el sistema cuando:",
+        options: [
+          "Su valor llega a cero",
+          "Su valor llega al infinito",
+          "No forma parte de la FO",
+          "Se vuelve negativa"
+        ],
+        correct: 0
+      },
+      {
+        text: "Una solución deja de ser óptima cuando:",
+        options: [
+          "La FO es cero",
+          "Alguna variable no básica puede aumentar la FO",
+          "Todas las restricciones son iguales",
+          "Hay un empate entre columnas"
+        ],
+        correct: 1
+      },
+      {
+        text: "El paso 1 del método Simplex consiste en:",
+        options: [
+          "Determinar la variable saliente",
+          "Igualar variables no básicas a cero",
+          "Hallar el vértice óptimo",
+          "Cambiar el sistema a forma cuadrática"
+        ],
+        correct: 1
+      },
+      {
+        text: "Para maximización, la solución óptima ocurre cuando la fila Ci – Zj tiene:",
+        options: [
+          "Valores negativos o cero",
+          "Valores positivos",
+          "Valores mixtos",
+          "Solo ceros"
+        ],
+        correct: 0
+      },
+      {
+        text: "Para minimización, la solución óptima ocurre cuando Ci – Zj tiene:",
+        options: [
+          "Solo ceros",
+          "Valores negativos",
+          "Valores positivos o cero",
+          "Ninguna condición"
+        ],
+        correct: 2
+      },
+      {
+        text: "La variable entrante en maximización es la que tiene:",
+        options: [
+          "Menor valor en Ci – Zj",
+          "Mayor valor positivo en Ci – Zj",
+          "Cero",
+          "Un coeficiente negativo"
+        ],
+        correct: 1
+      },
+      {
+        text: "La variable saliente se elige mediante:",
+        options: [
+          "La regla del menor índice",
+          "El valor más grande de la columna Z",
+          "El menor valor positivo del cociente Θ",
+          "Un cálculo experimental"
+        ],
+        correct: 2
+      },
+      {
+        text: "El método Big M se usa para:",
+        options: [
+          "Eliminar variables",
+          "Resolver problemas de minimización con restricciones ≥",
+          "Simplificar el gráfico",
+          "Aumentar la FO"
+        ],
+        correct: 1
+      },
+      {
+        text: "En Big M, las variables artificiales se agregan para:",
+        options: [
+          "Facilitar el cálculo del Z",
+          "Convertir desigualdades en igualdades",
+          "Hacer más grande la tabla",
+          "Reducir las iteraciones"
+        ],
+        correct: 1
+      },
+      {
+        text: "En maximización, las restricciones se transforman usando:",
+        options: [
+          "Variables de exceso",
+          "Variables binarias",
+          "Variables de holgura",
+          "Ninguna"
+        ],
+        correct: 2
+      },
+      {
+        text: "En minimización, las restricciones se transforman usando:",
+        options: [
+          "Holgura",
+          "Variables de exceso + artificiales",
+          "Variables binarias",
+          "Parámetros negativos"
+        ],
+        correct: 1
+      },
+      {
+        text: "Una ventaja del método Simplex es que:",
+        options: [
+          "Evita siempre los mínimos locales",
+          "Es rápido en todos los casos",
+          "No requiere iteraciones",
+          "Solo sirve para dos variables"
+        ],
+        correct: 0
+      },
+      {
+        text: "Una desventaja del Simplex es:",
+        options: [
+          "Solo funciona para dos variables",
+          "Converge más lento que otros métodos",
+          "No puede resolver minimización",
+          "No es algebraico"
+        ],
+        correct: 1
+      },
+      {
+        text: "El método Simplex se considera heurístico porque:",
+        options: [
+          "Usa aproximaciones no matemáticas",
+          "No depende de la geometría",
+          "Se basa en consideraciones geométricas",
+          "Es un método cualitativo"
+        ],
+        correct: 2
+      },
+      {
+        text: "En el ejercicio de la granja, las restricciones se basan en:",
+        options: [
+          "Ganancias y pérdidas",
+          "Horas mensuales y alimento disponible",
+          "Costos fijos",
+          "Precios del mercado"
+        ],
+        correct: 1
+      },
+      {
+        text: "En el ejercicio de minimización, la función objetivo se basa en:",
+        options: [
+          "Minimizar horas máquina",
+          "Minimizar el beneficio",
+          "Minimizar el costo total",
+          "Minimizar la demanda"
+        ],
+        correct: 2
+      }
+    ];
+
+    const container = document.getElementById("questions-container");
+    const scoreDiv = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+    const timerBox = document.getElementById("timer-box");
+    const statusBadge = document.getElementById("status-badge");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timeLeft = EXAM_DURATION_SECONDS;
+      timerElement.textContent = formatTime(timeLeft);
+      timerBox.style.borderColor = "#1f2937";
+      timerBox.style.color = "#e5e7eb";
+      examFinished = false;
+
+      timerId = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 60) {
+          timerBox.style.borderColor = "#f97316";
+          timerBox.style.color = "#f97316";
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          timerElement.textContent = "00:00";
+          if (!examFinished) {
+            submitQuiz(true); // auto-envío por tiempo
+          }
+          return;
+        }
+        timerElement.textContent = formatTime(timeLeft);
+      }, 1000);
+    }
+
+    function renderQuestions() {
+      container.innerHTML = "";
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.dataset.index = index;
+
+        qDiv.innerHTML = `
+          <div class="question-header">
+            <div class="question-title">${q.text}</div>
+            <div class="question-number">Pregunta ${index + 1}</div>
+          </div>
+          <div class="options">
+            ${q.options
+              .map(
+                (opt, i) => `
+              <label class="option">
+                <input type="radio" name="q${index}" value="${i}">
+                <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+              </label>
+            `
+              )
+              .join("")}
+          </div>
+          <div class="correction" id="corr-${index}"></div>
+        `;
+        container.appendChild(qDiv);
+      });
+      scoreDiv.innerHTML = `<span class="badge">Responde todo lo que puedas antes de que el tiempo termine.</span>`;
+      statusBadge.textContent = "Examen en curso – Tema: Simplex";
+    }
+
+    function disableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = true);
+    }
+
+    function enableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = false);
+    }
+
+    function submitQuiz(auto = false) {
+      if (examFinished) return;
+      examFinished = true;
+      clearInterval(timerId);
+      disableAllInputs();
+      submitBtn.disabled = true;
+
+      let correctas = 0;
+      let incorrectas = 0;
+      let sinResponder = 0;
+
+      questions.forEach((q, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const corrDiv = document.getElementById(`corr-${index}`);
+        const qDiv = container.querySelector(`.question[data-index="${index}"]`);
+        qDiv.classList.remove("correct", "incorrect");
+
+        if (!selected) {
+          sinResponder++;
+          corrDiv.textContent = "No respondida (Respuesta correcta: " +
+            String.fromCharCode(65 + q.correct) + ")";
+          corrDiv.className = "correction incorrect";
+          qDiv.classList.add("incorrect");
+        } else {
+          const val = parseInt(selected.value, 10);
+          if (val === q.correct) {
+            correctas++;
+            corrDiv.textContent = "Correcta ✔";
+            corrDiv.className = "correction correct";
+            qDiv.classList.add("correct");
+          } else {
+            incorrectas++;
+            corrDiv.textContent =
+              "Incorrecta ✘ (Respuesta correcta: " +
+              String.fromCharCode(65 + q.correct) + ")";
+            corrDiv.className = "correction incorrect";
+            qDiv.classList.add("incorrect");
+          }
+        }
+      });
+
+      const total = questions.length;
+      const porcentaje = ((correctas / total) * 100).toFixed(1);
+
+      scoreDiv.innerHTML = `
+        <div><strong>Resultado del examen:</strong></div>
+        <div>✔ Correctas: <strong>${correctas}</strong></div>
+        <div>✘ Incorrectas: <strong>${incorrectas}</strong></div>
+        <div>⏺ Sin responder: <strong>${sinResponder}</strong></div>
+        <div>Puntaje: <strong>${porcentaje}%</strong> sobre ${total} preguntas.</div>
+        <div style="margin-top:0.4rem; font-size:0.85rem; color:#9ca3af;">
+          ${auto ? "El tiempo terminó y el examen se envió automáticamente." : "Enviaste tus respuestas manualmente."}
+        </div>
+      `;
+
+      statusBadge.textContent = auto
+        ? "Examen finalizado por tiempo"
+        : "Examen enviado";
+    }
+
+    function resetExam() {
+      clearInterval(timerId);
+      examFinished = false;
+      submitBtn.disabled = false;
+      renderQuestions();
+      enableAllInputs();
+      startTimer();
+    }
+
+    submitBtn.addEventListener("click", () => submitQuiz(false));
+    resetBtn.addEventListener("click", resetExam);
+
+    // Inicial
+    renderQuestions();
+    startTimer();
+  </script>
+</body>
+</html>

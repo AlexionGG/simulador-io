@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Método Gráfico – Examen 20 min</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.8rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.1rem;
+      font-size: 1.7rem;
+      color: #facc15;
+    }
+
+    .subtitle {
+      margin-bottom: 1rem;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .timer {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15,23,42,0.9);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #e5e7eb;
+    }
+
+    .timer span.time {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .question {
+      margin-bottom: 1.2rem;
+      padding: 1rem 1.1rem;
+      border-radius: 0.75rem;
+      background: #020617;
+      border: 1px solid #111827;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .question-number {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      background: #020617;
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid #1f2937;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.35rem;
+      margin-top: 0.3rem;
+    }
+
+    label.option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+    }
+
+    label.option:hover {
+      background: #020617;
+      border-color: #1f2937;
+      transform: translateY(-1px);
+    }
+
+    label.option input {
+      margin-top: 0.1rem;
+      accent-color: #facc15;
+    }
+
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.55rem 1.3rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      background: #facc15;
+      color: #1f2937;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .result strong {
+      color: #fbbf24;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      background: rgba(148,163,184,0.12);
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .correction {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .correction.correct {
+      color: #22c55e;
+    }
+
+    .correction.incorrect {
+      color: #f97316;
+    }
+
+    .question.correct {
+      border-color: #16a34a;
+    }
+
+    .question.incorrect {
+      border-color: #ea580c;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1.3rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Quiz – Método Gráfico</h1>
+      <div class="subtitle">
+        Tienes <strong>20 minutos</strong> para responder.  
+        Al presionar <strong>Enviar</strong> (o cuando el tiempo termine), se mostrarán tus respuestas correctas e incorrectas.
+      </div>
+
+      <div class="top-bar">
+        <div class="timer" id="timer-box">
+          ⏱ Tiempo restante: <span class="time" id="timer">20:00</span>
+        </div>
+        <div class="badge" id="status-badge">
+          Examen en curso – Tema: Método Gráfico
+        </div>
+      </div>
+
+      <div id="questions-container"></div>
+
+      <div class="controls">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn-primary" id="submit-btn">✅ Enviar respuestas</button>
+          <button class="btn-secondary" id="reset-btn">🔁 Reiniciar examen</button>
+        </div>
+        <div id="score" class="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EXAM_DURATION_SECONDS = 20 * 60;
+    let timeLeft = EXAM_DURATION_SECONDS;
+    let timerId = null;
+    let examFinished = false;
+
+    const questions = [
+      {text:"La ecuación general de la recta según Murrias (2002) es:",options:["y = mx² + b","y = mx + b","x = my + b","y = m/x + b"],correct:1},
+      {text:"Cuando la pendiente es positiva, la recta forma un ángulo:",options:["Obtuso mayor a 90°","Recto","Agudo menor a 90°","Paralelo al eje y"],correct:2},
+      {text:"La ecuación de una recta con pendiente negativa es de la forma:",options:["y = mx + b","y = −mx + b","x = my + b","y = b"],correct:1},
+      {text:"Una pendiente igual a cero indica que la recta es:",options:["Paralela al eje y","Diagonal","Paralela al eje x","Con inclinación infinita"],correct:2},
+      {text:"Una pendiente infinita genera una recta:",options:["Paralela al eje x","Paralela al eje y","Horizontal","Curvilínea"],correct:1},
+      {text:"El primer paso para graficar una inecuación según Barsov (1972) es:",options:["Tomar dos puntos en la recta","Multiplicar todos los términos","Reemplazar el signo de desigualdad por igualdad","Evaluar puntos aleatorios"],correct:2},
+      {text:"Las rectas que representan ≥ o ≤ se grafican con:",options:["Línea segmentada","Línea curva","Línea continua","Línea punteada"],correct:2},
+      {text:"Si la desigualdad es estricta (< o >), se usa línea:",options:["Continua","Doble","Segmentada","Gruesa"],correct:2},
+      {text:"Para identificar el semiplano solución se usa:",options:["Distancia al origen","Dos puntos de prueba","La forma factorizada","La función objetivo"],correct:1},
+      {text:"La solución de un sistema de inecuaciones en dos variables siempre es:",options:["Una recta","Un conjunto convexo","Un conjunto vacío","Una curva cerrada"],correct:1},
+      {text:"Un conjunto es convexo cuando:",options:["No tiene fronteras","El segmento entre dos puntos está dentro del conjunto","Solo incluye líneas rectas","Genera curvas máximas"],correct:1},
+      {text:"Un conjunto convexo puede reducirse a:",options:["Una parábola","Un círculo","Una recta o un punto","Un volumen 3D"],correct:2},
+      {text:"El paso 2 del proceso consiste en:",options:["Evaluar la función objetivo","Sumar las ecuaciones","Despejar y","Hallar el punto óptimo"],correct:2},
+      {text:"El paso 3 consiste en armar una tabla con:",options:["Tres valores al azar","x = 0 y y = 0","Valores negativos únicamente","Valores positivos únicamente"],correct:1},
+      {text:"La región solución es:",options:["El lado opuesto a la intersección","La intersección de todas las inecuaciones","La suma de todas las ecuaciones","La recta donde se interceptan"],correct:1},
+      {text:"Si las inecuaciones no se intersecan, entonces:",options:["Hay infinitas soluciones","No existe solución","El dominio es total","Se ignora una restricción"],correct:1},
+      {text:"El primer paso para modelar un problema es:",options:["Hallar el punto máximo","Definir las variables","Graficar la región","Aplicar el simplex"],correct:1},
+      {text:"La función objetivo representa:",options:["Límites del problema","La meta a maximizar o minimizar","Restricciones ocultas","Puntos de prueba"],correct:1},
+      {text:"Las restricciones representan:",options:["Valores óptimos","Recursos o condiciones del problema","Errores de modelación","El semiplano factible"],correct:1},
+      {text:"Las condiciones de no negatividad indican que:",options:["Las variables pueden ser negativas","Las soluciones deben ser ≥ 0","Debe existir simetría","Todo número es válido"],correct:1},
+      {text:"En problemas de maximización, las restricciones suelen ser:",options:["=","≥","≤","Sin signo"],correct:2},
+      {text:"En problemas de minimización, las restricciones suelen ser:",options:["≤","≥","=","Sin signo"],correct:1},
+      {text:"El método gráfico solo se usa cuando hay:",options:["1 variable","2 variables","3 a 5 variables","Variables infinitas"],correct:1},
+      {text:"El eje X representa normalmente la variable:",options:["x₁","x₂","Z","La pendiente"],correct:0},
+      {text:"Los vértices de la región factible son importantes porque:",options:["Sirven para construir matrices","Siempre contienen la solución óptima","Indican la rotación de la pendiente","Forman las restricciones"],correct:1},
+      {text:"Si la región es no acotada, puede ocurrir que:",options:["No exista solución óptima","La solución sea única","El sistema sea inconsistente","Todas las rectas sean paralelas"],correct:0},
+      {text:"Una solución óptima única acotada ocurre cuando:",options:["La región se extiende al infinito","Hay un solo vértice óptimo","Hay múltiples rectas paralelas","No se cumple ninguna restricción"],correct:1},
+      {text:"Una solución múltiple acotada significa que:",options:["No hay solución","Todo un lado del polígono es óptimo","Hay un solo punto óptimo","La región no existe"],correct:1},
+      {text:"Una solución no acotada típicamente aparece en:",options:["Problemas sin restricciones","Problemas donde la FO crece al infinito","Problemas con FO constante","Problemas cualitativos"],correct:1},
+      {text:"El caso “ninguna solución” ocurre cuando:",options:["Las rectas coinciden","Las restricciones no se intersectan","La FO es paralela a un eje","Hay demasiados vértices"],correct:1}
+    ];
+
+    const container = document.getElementById("questions-container");
+    const scoreDiv = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+    const timerBox = document.getElementById("timer-box");
+    const statusBadge = document.getElementById("status-badge");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timeLeft = EXAM_DURATION_SECONDS;
+      timerElement.textContent = formatTime(timeLeft);
+      timerBox.style.borderColor = "#1f2937";
+      timerBox.style.color = "#e5e7eb";
+      examFinished = false;
+
+      timerId = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 60) {
+          timerBox.style.borderColor = "#f97316";
+          timerBox.style.color = "#f97316";
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          timerElement.textContent = "00:00";
+          if (!examFinished) {
+            submitQuiz(true);
+          }
+          return;
+        }
+        timerElement.textContent = formatTime(timeLeft);
+      }, 1000);
+    }
+
+    function renderQuestions() {
+      container.innerHTML = "";
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.dataset.index = index;
+
+        qDiv.innerHTML = `
+          <div class="question-header">
+            <div class="question-title">${q.text}</div>
+            <div class="question-number">Pregunta ${index + 1}</div>
+          </div>
+          <div class="options">
+            ${q.options.map((opt, i) => `
+              <label class="option">
+                <input type="radio" name="q${index}" value="${i}">
+                <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+              </label>
+            `).join("")}
+          </div>
+          <div class="correction" id="corr-${index}"></div>
+        `;
+        container.appendChild(qDiv);
+      });
+      scoreDiv.innerHTML = `<span class="badge">Responde todo lo que puedas antes de que el tiempo termine.</span>`;
+      statusBadge.textContent = "Examen en curso – Tema: Método Gráfico";
+    }
+
+    function disableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = true);
+    }
+
+    function enableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = false);
+    }
+
+    function submitQuiz(auto = false) {
+      if (examFinished) return;
+      examFinished = true;
+      clearInterval(timerId);
+      disableAllInputs();
+      submitBtn.disabled = true;
+
+      let correctas = 0;
+      let incorrectas = 0;
+      let sinResponder = 0;
+
+      questions.forEach((q, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const corrDiv = document.getElementById(`corr-${index}`);
+        const qDiv = container.querySelector(`.question[data-index="${index}"]`);
+        qDiv.classList.remove("correct", "incorrect");
+
+        if (!selected) {
+          sinResponder++;
+          corrDiv.textContent = "No respondida (Respuesta correcta: " +
+            String.fromCharCode(65 + q.correct) + ")";
+          corrDiv.className = "correction incorrect";
+          qDiv.classList.add("incorrect");
+        } else {
+          const val = parseInt(selected.value, 10);
+          if (val === q.correct) {
+            correctas++;
+            corrDiv.textContent = "Correcta ✔";
+            corrDiv.className = "correction correct";
+            qDiv.classList.add("correct");
+          } else {
+            incorrectas++;
+            corrDiv.textContent =
+              "Incorrecta ✘ (Respuesta correcta: " +
+              String.fromCharCode(65 + q.correct) + ")";
+            corrDiv.className = "correction incorrect";
+            qDiv.classList.add("incorrect");
+          }
+        }
+      });
+
+      const total = questions.length;
+      const porcentaje = ((correctas / total) * 100).toFixed(1);
+
+      scoreDiv.innerHTML = `
+        <div><strong>Resultado del examen:</strong></div>
+        <div>✔ Correctas: <strong>${correctas}</strong></div>
+        <div>✘ Incorrectas: <strong>${incorrectas}</strong></div>
+        <div>⏺ Sin responder: <strong>${sinResponder}</strong></div>
+        <div>Puntaje: <strong>${porcentaje}%</strong> sobre ${total} preguntas.</div>
+        <div style="margin-top:0.4rem; font-size:0.85rem; color:#9ca3af;">
+          ${auto ? "El tiempo terminó y el examen se envió automáticamente." : "Enviaste tus respuestas manualmente."}
+        </div>
+      `;
+
+      statusBadge.textContent = auto
+        ? "Examen finalizado por tiempo"
+        : "Examen enviado";
+    }
+
+    function resetExam() {
+      clearInterval(timerId);
+      examFinished = false;
+      submitBtn.disabled = false;
+      renderQuestions();
+      enableAllInputs();
+      startTimer();
+    }
+
+    submitBtn.addEventListener("click", () => submitQuiz(false));
+    resetBtn.addEventListener("click", resetExam);
+
+    renderQuestions();
+    startTimer();
+  </script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz IO – Examen 20 min</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.8rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid #1f2937;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.1rem;
+      font-size: 1.7rem;
+      color: #facc15;
+    }
+
+    .subtitle {
+      margin-bottom: 1rem;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .timer {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15,23,42,0.9);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #e5e7eb;
+    }
+
+    .timer span.time {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .question {
+      margin-bottom: 1.2rem;
+      padding: 1rem 1.1rem;
+      border-radius: 0.75rem;
+      background: #020617;
+      border: 1px solid #111827;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .question-number {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      background: #020617;
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid #1f2937;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.35rem;
+      margin-top: 0.3rem;
+    }
+
+    label.option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+    }
+
+    label.option:hover {
+      background: #020617;
+      border-color: #1f2937;
+      transform: translateY(-1px);
+    }
+
+    label.option input {
+      margin-top: 0.1rem;
+      accent-color: #facc15;
+    }
+
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.55rem 1.3rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      background: #facc15;
+      color: #1f2937;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .result strong {
+      color: #fbbf24;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      background: rgba(148,163,184,0.12);
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .correction {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .correction.correct {
+      color: #22c55e;
+    }
+
+    .correction.incorrect {
+      color: #f97316;
+    }
+
+    .question.correct {
+      border-color: #16a34a;
+    }
+
+    .question.incorrect {
+      border-color: #ea580c;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 1.3rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Quiz – Introducción a IO</h1>
+      <div class="subtitle">
+        Tienes <strong>20 minutos</strong> para responder.  
+        Al presionar <strong>Enviar</strong> (o cuando el tiempo termine), se mostrarán tus respuestas correctas e incorrectas.
+      </div>
+
+      <div class="top-bar">
+        <div class="timer" id="timer-box">
+          ⏱ Tiempo restante: <span class="time" id="timer">20:00</span>
+        </div>
+        <div class="badge" id="status-badge">
+          Examen en curso – Tema: IO
+        </div>
+      </div>
+
+      <div id="questions-container"></div>
+
+      <div class="controls">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn-primary" id="submit-btn">✅ Enviar respuestas</button>
+          <button class="btn-secondary" id="reset-btn">🔁 Reiniciar examen</button>
+        </div>
+        <div id="score" class="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EXAM_DURATION_SECONDS = 20 * 60; // 20 minutos
+    let timeLeft = EXAM_DURATION_SECONDS;
+    let timerId = null;
+    let examFinished = false;
+
+    const questions = [
+      {text:"La Investigación de Operaciones es:",options:["Un método empírico basado en intuición","El uso de matemáticas y computación para decisiones racionales","Un proceso administrativo tradicional","Solo análisis cualitativo"],correct:1},
+      {text:"La IO busca principalmente:",options:["Crear productos innovadores","Optimizar recursos y mejorar eficiencia","Diseñar encuestas","Reducir personal"],correct:1},
+      {text:"La IO se basa principalmente en:",options:["Opiniones de expertos","Experimentos biológicos","El método científico","Arte y diseño de procesos"],correct:2},
+      {text:"¿Qué es un modelo en IO?",options:["Una copia exacta del sistema real","Una representación abstracta de ciertas características reales","Una simulación sin datos","Un proceso automático"],correct:1},
+      {text:"La mayoría de sistemas estudiados en IO son:",options:["Infinitos","Completamente controlables","Complejos y con recursos escasos","Sin restricciones"],correct:2},
+      {text:"El método inductivo parte de:",options:["Teorías generales","Observaciones particulares","Datos inventados","Modelos lineales"],correct:1},
+      {text:"El método deductivo parte de:",options:["Datos empíricos","Casos específicos","Principios generales","Opiniones externas"],correct:2},
+      {text:"El método analítico consiste en:",options:["Unir todas las partes","Dividir un sistema para estudiarlo","Hacer comparaciones","Simular escenarios"],correct:1},
+      {text:"El método sintético es:",options:["Dividir sistemas","Integrar partes para comprender el todo","Eliminar incertidumbre","Comparar modelos"],correct:1},
+      {text:"El método hipotético-deductivo:",options:["No usa hipótesis","Combina inducción y deducción","Usa únicamente experimentos físicos","Es exclusivo de la biología"],correct:1},
+      {text:"Los métodos cualitativos se basan en:",options:["Datos numéricos","Variables financieras","Entrevistas, textos, comportamientos","Cálculo de matrices"],correct:2},
+      {text:"La IO moderna surge en:",options:["La revolución industrial","La Segunda Guerra Mundial","La Guerra Fría","La era digital"],correct:1},
+      {text:"El primer grupo de investigación operacional fue creado por:",options:["Alemania","Japón","La Fuerza Aérea Británica","La NASA"],correct:2},
+      {text:"¿Qué país formó grupos similares con varios premios Nobel?",options:["Japón","Estados Unidos","Francia","Rusia"],correct:1},
+      {text:"Un pionero clave por su aporte al método simplex es:",options:["Gomory","Kuhn","George B. Dantzig","Tucker"],correct:2},
+      {text:"Los modelos matemáticos representan:",options:["Opiniones subjetivas","Sistemas reales mediante ecuaciones","Diagramas artísticos","Solo datos cualitativos"],correct:1},
+      {text:"Los modelos normativos buscan:",options:["Describir una alternativa","Seleccionar la mejor alternativa","Eliminar incertidumbre","Crear modelos psicológicos"],correct:1},
+      {text:"Los modelos descriptivos permiten:",options:["Eliminar restricciones","Analizar alternativas mediante simulación","Seleccionar la opción óptima","Crear nuevas variables"],correct:1},
+      {text:"Los modelos incluyen errores porque:",options:["Siempre son incorrectos","No pueden incluir todos los aspectos reales","No usan datos","Están mal diseñados"],correct:1},
+      {text:"Un modelo es tan bueno como:",options:["La cantidad de variables","La información con la que trabaja","Su estética","Su tamaño"],correct:1},
+      {text:"La primera fase de aplicación es:",options:["Validación","Implementación","Formular el problema","Ejecutar"],correct:2},
+      {text:"La definición del problema requiere:",options:["Inventar datos","Identificar variables, objetivos y restricciones","Elegir un software","Crear nuevas funciones"],correct:1},
+      {text:"La función objetivo describe:",options:["La meta de maximizar o minimizar","Las restricciones","La incertidumbre del sistema","El análisis de sensibilidad"],correct:0},
+      {text:"Las variables de decisión representan:",options:["Elementos no controlables","Aspectos bajo control del tomador","Recursos externos","Datos irrelevantes"],correct:1},
+      {text:"Las restricciones representan:",options:["Condiciones que limitan el sistema","Factores decorativos","Elementos no importantes","Resultados óptimos"],correct:0},
+      {text:"Una parte final del proceso es:",options:["Evitar pruebas","Ejecutar y validar","Quitar restricciones","Aumentar variables"],correct:1},
+      {text:"La validación del modelo implica:",options:["Ver si se adapta a la realidad","Suprimir información","Cambiar objetivos","Eliminar variables"],correct:0},
+      {text:"El análisis de sensibilidad permite:",options:["Alterar el modelo al azar","Evaluar cambios en parámetros","Eliminar decisiones","Reducir la función objetivo"],correct:1},
+      {text:"La programación lineal busca:",options:["Resolver problemas sin restricciones","Optimizar funciones lineales con restricciones lineales","Usar solo datos cualitativos","Resolver integrales"],correct:1},
+      {text:"El método gráfico se usa cuando hay:",options:["Dos variables","Muchas variables","Sistemas dispersos","Datos aleatorios"],correct:0},
+      {text:"¿Qué método resuelve problemas grandes?",options:["Método heurístico","Método de transporte","Método simplex","Método pictórico"],correct:2},
+      {text:"La palabra \"programación\" en PL significa:",options:["Programar software","Planear matemáticamente","Crear algoritmos aleatorios","Estructurar encuestas"],correct:1},
+      {text:"Una técnica de IO es:",options:["Análisis de riesgo","Diseño arquitectónico","Arte digital","Logística estética"],correct:0},
+      {text:"La planificación de la producción es:",options:["Una aplicación clave de IO","Un proceso psicológico","Una técnica cualitativa","Un proceso subjetivo"],correct:0},
+      {text:"La programación dinámica se usa en:",options:["Juegos de azar","Procesos de decisión","Análisis cualitativo","Ventas minoristas"],correct:1},
+      {text:"Una técnica estocástica se caracteriza por:",options:["Ausencia de incertidumbre","Incorporar aleatoriedad","Ser siempre determinista","No usar probabilidades"],correct:1},
+      {text:"La IO se aplica en:",options:["Moda y diseño personal","Industria, energía, banca, agricultura","Gastronomía","Artes visuales"],correct:1},
+      {text:"La logística es un campo asociado a:",options:["Programación literaria","Investigación Operativa","Música","Psicología"],correct:1},
+      {text:"El transporte es un ejemplo de:",options:["Campo artístico","Aplicación de IO","Método cualitativo","Modelo verbal"],correct:1},
+      {text:"Un principio general indica que:",options:["Un modelo debe ser lo más complejo posible","Un modelo simple puede ser suficiente","Los modelos deben reemplazar decisiones","No debe validarse el modelo"],correct:1},
+      {text:"“El modelo no es la realidad” significa que:",options:["Los modelos son inútiles","Son solo aproximaciones","Son copias exactas","No sirven para datos reales"],correct:1},
+      {text:"Un modelo debe criticarse por:",options:["Elementos fuera de su propósito","Su estética visual","Su velocidad","El largo del reporte"],correct:0},
+      {text:"Nunca debe ajustarse el problema al modelo porque:",options:["Produce errores graves","Es más costoso","No es estético","Es demasiado lento"],correct:0},
+      {text:"Un modelo determinista asume:",options:["Incertidumbre total","Resultado único y exacto","Datos cualitativos","Cambios constantes"],correct:1},
+      {text:"Un modelo probabilístico incorpora:",options:["Certeza absoluta","Aleatoriedad e incertidumbre","Valores fijos","Principios subjetivos"],correct:1},
+      {text:"El modelo clásico busca:",options:["Optimizar beneficio económico","Analizar emociones humanas","Minimizar matrices","Crear simulaciones visuales"],correct:0},
+      {text:"El modelo satisficer o racionalidad limitada:",options:["Busca la perfección","Selecciona soluciones satisfactorias, no óptimas","Elimina restricciones","Trabaja sin datos"],correct:1},
+      {text:"El modelo simplificado aparece cuando:",options:["Se copian soluciones pasadas","Se inventan datos","Se generan teorías nuevas","Se eliminan restricciones"],correct:0},
+      {text:"Según Michael Porter, las decisiones deben basarse en:",options:["Emociones","Análisis situacional","Intuición del gerente","Modelos gráficos"],correct:1}
+    ];
+
+    const container = document.getElementById("questions-container");
+    const scoreDiv = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+    const timerBox = document.getElementById("timer-box");
+    const statusBadge = document.getElementById("status-badge");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timeLeft = EXAM_DURATION_SECONDS;
+      timerElement.textContent = formatTime(timeLeft);
+      timerBox.style.borderColor = "#1f2937";
+      timerBox.style.color = "#e5e7eb";
+      examFinished = false;
+
+      timerId = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 60) {
+          timerBox.style.borderColor = "#f97316";
+          timerBox.style.color = "#f97316";
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          timerElement.textContent = "00:00";
+          if (!examFinished) {
+            submitQuiz(true);
+          }
+          return;
+        }
+        timerElement.textContent = formatTime(timeLeft);
+      }, 1000);
+    }
+
+    function renderQuestions() {
+      container.innerHTML = "";
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.dataset.index = index;
+
+        qDiv.innerHTML = `
+          <div class="question-header">
+            <div class="question-title">${q.text}</div>
+            <div class="question-number">Pregunta ${index + 1}</div>
+          </div>
+          <div class="options">
+            ${q.options.map((opt, i) => `
+              <label class="option">
+                <input type="radio" name="q${index}" value="${i}">
+                <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+              </label>
+            `).join("")}
+          </div>
+          <div class="correction" id="corr-${index}"></div>
+        `;
+        container.appendChild(qDiv);
+      });
+      scoreDiv.innerHTML = `<span class="badge">Responde todo lo que puedas antes de que el tiempo termine.</span>`;
+      statusBadge.textContent = "Examen en curso – Tema: IO";
+    }
+
+    function disableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = true);
+    }
+
+    function enableAllInputs() {
+      const inputs = container.querySelectorAll("input[type='radio']");
+      inputs.forEach(input => input.disabled = false);
+    }
+
+    function submitQuiz(auto = false) {
+      if (examFinished) return;
+      examFinished = true;
+      clearInterval(timerId);
+      disableAllInputs();
+      submitBtn.disabled = true;
+
+      let correctas = 0;
+      let incorrectas = 0;
+      let sinResponder = 0;
+
+      questions.forEach((q, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        const corrDiv = document.getElementById(`corr-${index}`);
+        const qDiv = container.querySelector(`.question[data-index="${index}"]`);
+        qDiv.classList.remove("correct", "incorrect");
+
+        if (!selected) {
+          sinResponder++;
+          corrDiv.textContent = "No respondida (Respuesta correcta: " +
+            String.fromCharCode(65 + q.correct) + ")";
+          corrDiv.className = "correction incorrect";
+          qDiv.classList.add("incorrect");
+        } else {
+          const val = parseInt(selected.value, 10);
+          if (val === q.correct) {
+            correctas++;
+            corrDiv.textContent = "Correcta ✔";
+            corrDiv.className = "correction correct";
+            qDiv.classList.add("correct");
+          } else {
+            incorrectas++;
+            corrDiv.textContent =
+              "Incorrecta ✘ (Respuesta correcta: " +
+              String.fromCharCode(65 + q.correct) + ")";
+            corrDiv.className = "correction incorrect";
+            qDiv.classList.add("incorrect");
+          }
+        }
+      });
+
+      const total = questions.length;
+      const porcentaje = ((correctas / total) * 100).toFixed(1);
+
+      scoreDiv.innerHTML = `
+        <div><strong>Resultado del examen:</strong></div>
+        <div>✔ Correctas: <strong>${correctas}</strong></div>
+        <div>✘ Incorrectas: <strong>${incorrectas}</strong></div>
+        <div>⏺ Sin responder: <strong>${sinResponder}</strong></div>
+        <div>Puntaje: <strong>${porcentaje}%</strong> sobre ${total} preguntas.</div>
+        <div style="margin-top:0.4rem; font-size:0.85rem; color:#9ca3af;">
+          ${auto ? "El tiempo terminó y el examen se envió automáticamente." : "Enviaste tus respuestas manualmente."}
+        </div>
+      `;
+
+      statusBadge.textContent = auto
+        ? "Examen finalizado por tiempo"
+        : "Examen enviado";
+    }
+
+    function resetExam() {
+      clearInterval(timerId);
+      examFinished = false;
+      submitBtn.disabled = false;
+      renderQuestions();
+      enableAllInputs();
+      startTimer();
+    }
+
+    submitBtn.addEventListener("click", () => submitQuiz(false));
+    resetBtn.addEventListener("click", resetExam);
+
+    renderQuestions();
+    startTimer();
+  </script>
+</body>
+</html>
